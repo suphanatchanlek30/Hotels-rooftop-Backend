@@ -130,4 +130,34 @@ router.delete("/:id", async(req, res) => {
     }
 });
 
+// related posts
+router.get("/related/:id", async(req, res) => {
+    try {
+        const {id} = req.params;
+        if(!id) {
+            return res.status(404).send({message: "Post id is required"});
+        }
+
+        const blog = await Blog.findById(id);
+
+        if(!blog) {
+            return res.status(404).send({message: "Post is not required"});
+        }
+
+        const titleRegex = new RegExp(blog.title.split(' ').join('|'), 'i');
+
+        const relatedQuery = {
+            _id: {$ne: id}, //exclude the current blog by id
+            title: {$regex: titleRegex} //exclude the current blog by title
+        } 
+
+        const relatedPost = await Blog.find(relatedQuery);
+        res.status(404).send({message: "Related post found!", post: relatedPost});
+        
+    } catch (error) {
+        console.error("Error fetching related post: ", error);
+        res.status(500).send({message: "Error fetching related post"});
+    }
+});
+
 module.exports = router;
