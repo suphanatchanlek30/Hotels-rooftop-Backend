@@ -88,5 +88,46 @@ router.get("/:id", async(req, res) => {
     }
 });
 
+// update a blog post
+router.patch("/update-post/:id", async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const updatedPost = await Blog.findByIdAndUpdate(postId, {
+            ...req.body
+        }, {new: true});
+
+        if(!updatedPost){
+            return res.status(404).send({message: "Post not found"});
+        }
+        res.status(200).send({
+            message: "Post updated successfully",
+            post:  updatedPost
+        });
+
+    } catch (error) {
+        console.error("Error updating post: ", error);
+        res.status(500).send({message: "Error updating post"});
+    }
+});
+
+// delete a blog post
+router.delete("/:id", async(req, res) => {
+    try{
+        const postId = req.params.id;
+        const post = await Blog.findByIdAndDelete(postId);
+
+        if(!post){
+            return res.status(404).send({message: "Post not found"});
+        }
+        res.status(200).send({
+            message: "Post delete successfully",
+            post:  post
+        });
+
+    } catch (error) {
+        console.error("Error delete post: ", error);
+        res.status(500).send({message: "Error delete post"});
+    }
+});
 
 module.exports = router;
