@@ -9,9 +9,13 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// routes
+// routes start
 const blogRoutes = require("./src/routes/blog.route");
+const CommentRoutes = require("./src/routes/comment.route");
+
 app.use("/api/blogs", blogRoutes);
+app.use("/api/comments", CommentRoutes);
+// routes end
 
 // connect database
 async function main() {
@@ -23,7 +27,6 @@ async function main() {
 }
 
 main().then(()=> console.log("Mongodb connected successfully!")).catch(err => console.log(err));
-
 
 
 app.listen(port, () => {
