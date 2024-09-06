@@ -1,5 +1,7 @@
 const express = require('express');
+
 const User = require('../model/user.model');
+const generateToken = require('../middleware/generateToken');
 
 const router = express.Router();
 
@@ -37,8 +39,16 @@ router.post('/login', async(req, res) => {
             return res.status(404).send({message: 'Invalid password!'});
         }
 
-        // todo : generate token here
-        res.status(200).send({message: 'Login successful!', user: {
+        // generate token here
+        const token = await generateToken(user._id);
+        // console.log("Generated Token :", token);
+        res.cookie("token", token, {
+            httpOnl: true, // enable this only when you have https://
+            secure: true,
+            sameSite: true
+        });
+
+        res.status(200).send({message: 'Login successful!', token, user: {
             _id: user.id,
             email: user.email,
             password: user.password,
