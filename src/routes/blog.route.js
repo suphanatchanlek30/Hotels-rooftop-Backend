@@ -2,15 +2,15 @@ const express = require('express');
 const Blog = require('../model/blog.model');
 const Comment = require('../model/comment.model');
 const verifyToken = require('../middleware/verifyToken');
+const isAdmin = require('../middleware/isAdmin');
 const router = express.Router();
 
 
 // create a blog post
-router.post('/create-post', verifyToken, async(req, res) => {
+router.post('/create-post', verifyToken, isAdmin, async(req, res) => {
     try {
         // console.log("Blog data from api: ",req.body)
-        const newPost = new Blog({...req.body}); // todo : user  author: req.userId, when you have tokenVerify
-        await newPost.save();
+        const newPost = new Blog({...req.body, author: req.userId});
         res.status(200).send({
             message: "Post created successfully",
             post: newPost
