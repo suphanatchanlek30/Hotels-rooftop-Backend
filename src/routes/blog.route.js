@@ -1,11 +1,12 @@
 const express = require('express');
 const Blog = require('../model/blog.model');
 const Comment = require('../model/comment.model');
+const verifyToken = require('../middleware/verifyToken');
 const router = express.Router();
 
 
 // create a blog post
-router.post('/create-post', async(req, res) => {
+router.post('/create-post', verifyToken, async(req, res) => {
     try {
         // console.log("Blog data from api: ",req.body)
         const newPost = new Blog({...req.body}); // todo : user  author: req.userId, when you have tokenVerify
@@ -21,7 +22,7 @@ router.post('/create-post', async(req, res) => {
 });
 
 // get all blogs
-router.get('/', async(req, res) => {
+router.get('/',  async(req, res) => {
     try {
         // fillter start
         const {search, category, location} = req.query;
@@ -89,7 +90,7 @@ router.get("/:id", async(req, res) => {
 });
 
 // update a blog post
-router.patch("/update-post/:id", async (req, res) => {
+router.patch("/update-post/:id", verifyToken, async (req, res) => {
     try {
         const postId = req.params.id;
         const updatedPost = await Blog.findByIdAndUpdate(postId, {
@@ -111,7 +112,7 @@ router.patch("/update-post/:id", async (req, res) => {
 });
 
 // delete a blog post
-router.delete("/:id", async(req, res) => {
+router.delete("/:id", verifyToken, async(req, res) => {
     try{
         const postId = req.params.id;
         const post = await Blog.findByIdAndDelete(postId);
