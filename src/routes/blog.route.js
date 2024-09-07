@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/create-post', async(req, res) => {
     try {
         // console.log("Blog data from api: ",req.body)
-        const newPost = new Blog({...req.body});
+        const newPost = new Blog({...req.body}); // todo : user  author: req.userId, when you have tokenVerify
         await newPost.save();
         res.status(200).send({
             message: "Post created successfully",
@@ -55,8 +55,7 @@ router.get('/', async(req, res) => {
 
         // fillter end
 
-        const post = await Blog.find(query).sort({category: -1}); //fillter แสดง
-
+        const post = await Blog.find(query).populate('author', 'email').sort({category: -1}); //fillter แสดง
         res.status(200).send({
             message: "All posts retrieved successfully",
             post: post
